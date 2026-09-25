@@ -1,0 +1,17 @@
+bar {
+    status_command i3blocks
+    position top
+    #mode hide
+    #hidden_state hide
+    #modifier $mod
+    colors {
+        background $black
+        statusline $white
+        separator $green
+        #                  border  backgr. text
+        focused_workspace  $green $black $green
+        active_workspace   $white $black $white
+        inactive_workspace $gray  $black $gray
+        urgent_workspace   $red   $black $red
+    }
+}

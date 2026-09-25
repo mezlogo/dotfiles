@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+
+# Generate help if first arg is help or no args
+if [ "$1" = "help" ] || [ -z "$1" ]; then
+    echo "Usage: $0 <path_to_jdtls_launcher_jar> <path_to_jdtls_config> <path_to_jdtls_data> <path_to_lombok_jar>"
+    exit 0
+fi
+
+# Take path to jdtls jar as a first command line argument
+# ./plugins/org.eclipse.equinox.launcher_1.5.200.v20180922-1751.jar 
+JDTLS_LAUNCHER_JAR="$1"
+
+# Validate it exist
+if [ ! -f "$JDTLS_LAUNCHER_JAR" ]; then
+    echo "JDTLS_LAUNCHER_JAR not found: $JDTLS_LAUNCHER_JAR"
+    exit 1
+fi
+
+# Take path to configuration as a second command line argument
+# ./config_linux
+JDTLS_CONFIG="$2"
+
+# Validate
+if [ ! -d "$JDTLS_CONFIG" ]; then
+    echo "JDTLS_CONFIG not found: $JDTLS_CONFIG"
+    exit 1
+fi
+
+# Take path to workspace folder as a third argument
+JDTLS_DATA="$3"
+
+# Validate it is just not empty string, cos dir could not be exist yet
+if [ -z "$JDTLS_DATA" ]; then
+    echo "JDTLS_DATA not found: $JDTLS_DATA"
+    exit 1
+fi
+
+# Take path to lombok.jar as forth
+JDTLS_LOMBOK="$4"
+
+# Validate it exist
+if [ ! -f "$JDTLS_LOMBOK" ]; then
+    echo "JDTLS_LOMBOK not found: $JDTLS_LOMBOK"
+    exit 1
+fi
+
+exec java \
+    --add-modules=ALL-SYSTEM \
+    --add-opens java.base/java.util=ALL-UNNAMED \
+    --add-opens java.base/java.lang=ALL-UNNAMED \
+    --add-opens java.base/sun.nio.fs=ALL-UNNAMED \
+    -javaagent:"$JDTLS_LOMBOK" \
+    -Declipse.application=org.eclipse.jdt.ls.core.id1 \
+    -Dosgi.bundles.defaultStartLevel=4 \
+    -Declipse.product=org.eclipse.jdt.ls.core.product \
+    -Djava.import.generatesMetadataFilesAtProjectRoot=false \
+    -DDetectVMInstallationsJob.disabled=true \
+    -Dfile.encoding=utf8 \
+    -XX:+UseParallelGC \
+    -XX:GCTimeRatio=4 \
+    -XX:AdaptiveSizePolicyWeight=90 \
+    -Xmx2G \
+    -Xms100m \
+    -jar "$JDTLS_LAUNCHER_JAR" \
+    -configuration "$JDTLS_CONFIG" \
+    -data "$JDTLS_DATA"
+
+    # -Dlog.level=ALL \
+
+# /home/mezlogo/.vscode/extensions/redhat.java-1.50.0-linux-x64/jre/21.0.9-linux-x86_64/bin/java --add-modules=ALL-SYSTEM --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/sun.nio.fs=ALL-UNNAMED -Declipse.application=org.eclipse.jdt.ls.core.id1 -Dosgi.bundles.defaultStartLevel=4 -Declipse.product=org.eclipse.jdt.ls.core.product -Djava.import.generatesMetadataFilesAtProjectRoot=false -DDetectVMInstallationsJob.disabled=true -Dfile.encoding=utf8 -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m -Xlog:disable -javaagent:/home/mezlogo/.vscode/extensions/redhat.java-1.50.0-linux-x64/lombok/lombok-1.18.39-4050.jar -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/home/mezlogo/.config/Code/User/workspaceStorage/ca1525fb3018468a92cf4c735b2cd4cf/redhat.java -Daether.dependencyCollector.impl=bf -jar /home/mezlogo/.vscode/extensions/redhat.java-1.50.0-linux-x64/server/plugins/org.eclipse.equinox.launcher_1.7.100.v20251111-0406.jar -configuration /home/mezlogo/.config/Code/User/globalStorage/redhat.java/1.50.0/config_linux -data /home/mezlogo/.config/Code/User/workspaceStorage/ca1525fb3018468a92cf4c735b2cd4cf/redhat.java/jdt_ws --pipe=/run/user/1000/lsp-fc1271099ecafb24f0b8923a2f7bf9db.sock
+# exec java \
+#     --add-modules=ALL-SYSTEM \
+#     --add-opens java.base/java.util=ALL-UNNAMED \
+#     --add-opens java.base/java.lang=ALL-UNNAMED \
+#     --add-opens java.base/sun.nio.fs=ALL-UNNAMED \
+#     -Declipse.application=org.eclipse.jdt.ls.core.id1 \
+#     -Dosgi.bundles.defaultStartLevel=4 \
+#     -Declipse.product=org.eclipse.jdt.ls.core.product \
+#     -Djava.import.generatesMetadataFilesAtProjectRoot=false \
+#     -DDetectVMInstallationsJob.disabled=true \
+#     -Dfile.encoding=utf8 \
+#     -XX:+UseParallelGC \
+#     -XX:GCTimeRatio=4 \
+#     -XX:AdaptiveSizePolicyWeight=90 \
+#     -Xmx2G \
+#     -Xms100m \
+#     -Xlog:disable \
+#     -javaagent:/home/mezlogo/.vscode/extensions/redhat.java-1.50.0-linux-x64/lombok/lombok-1.18.39-4050.jar \
+#     -Daether.dependencyCollector.impl=bf \
+#     -jar /home/mezlogo/.vscode/extensions/redhat.java-1.50.0-linux-x64/server/plugins/org.eclipse.equinox.launcher_1.7.100.v20251111-0406.jar \
+#     -configuration /home/mezlogo/.config/Code/User/globalStorage/redhat.java/1.50.0/config_linux \
+#     -data /home/mezlogo/.config/Code/User/workspaceStorage/ca1525fb3018468a92cf4c735b2cd4cf/redhat.java/jdt_ws
+#-data /tmp/myjdtlsdata 
+#--pipe=/run/user/1000/lsp-fc1271099ecafb24f0b8923a2f7bf9db.sock

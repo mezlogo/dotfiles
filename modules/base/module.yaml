@@ -1,0 +1,23 @@
+pacman:
+  - amd-ucode
+  - base
+  - base-devel
+  - efibootmgr
+  - git
+  - iptables
+  - iwd
+  - linux-firmware-intel
+  - linux-lts
+  - mkinitcpio
+  - openssh
+  - reflector
+  - sudo
+  - vim
+systemd:
+  - getty@.service
+  - iwd.service
+  - sshd.service
+  - systemd-network-generator.service
+  - systemd-networkd.service
+  - systemd-resolved.service
+  - systemd-timesyncd.service

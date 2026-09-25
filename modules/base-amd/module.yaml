@@ -1,0 +1,7 @@
+pacman:
+  - linux-firmware-amd
+  - mesa
+  - libva-mesa-driver
+  - vulkan-radeon
+  - vulkan-mesa-layers
+  #- rocm-smi-lib

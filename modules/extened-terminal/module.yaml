@@ -1,0 +1,31 @@
+pacman:
+  # kotlin multiplatform native require libcrypt.so.1, arch has version 2
+  # ./archsync: error while loading shared libraries: libcrypt.so.1: cannot open shared object file: No such file or directory
+  - libxcrypt-compat
+  - fish
+  - fisher
+  - fzf
+  - ripgrep
+  - fd
+  - jq
+  - bat
+  - btop
+  - eza
+  - delta
+  - just
+  - neovim
+  - btop
+  - nvtop
+  - git
+  - openssh
+  - less
+  - zip
+  - unzip
+  - ffmpeg
+  - socat
+  - tree-sitter-cli
+  - tmux
+  - keyd
+usersystemd:
+  - ssh-agent.service
+

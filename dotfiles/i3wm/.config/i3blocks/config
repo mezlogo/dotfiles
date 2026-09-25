@@ -1,0 +1,40 @@
+separator_block_width=15
+separator=true
+#markup=none
+
+
+[layout]
+command=$HOME/.config/i3/scripts/layout.sh get-layout
+interval=once
+signal=3
+
+[battery]
+label=󱐋
+command=cat /sys/class/power_supply/BAT0/capacity
+interval=30
+
+[volume]
+label=♪
+command=$HOME/.config/i3/scripts/volume.sh get-level
+interval=once
+signal=1
+
+[backlight]
+label=
+command=$HOME/.config/i3/scripts/backlight.sh get-level
+interval=once
+signal=2
+
+[memory]
+command=awk '/MemAvailable/ { printf "%dMb\n", $2 / 1024 }' /proc/meminfo
+label=󰍛 
+interval=5
+
+[load_average]
+command=cut -d ' ' -f1 /proc/loadavg
+label= 
+interval=1
+
+[time]
+command=date '+%H:%M:%S'
+interval=1

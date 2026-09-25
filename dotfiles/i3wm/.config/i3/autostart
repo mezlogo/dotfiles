@@ -1,0 +1,5 @@
+# exec --no-startup-id "xkbcomp -w 0 ~/.config/xkb/xkbdump $DISPLAY"
+exec --no-startup-id "greenclip daemon"
+exec --no-startup-id "dunst"
+exec --no-startup-id "flameshot"
+exec --no-startup-id "nm-applet"

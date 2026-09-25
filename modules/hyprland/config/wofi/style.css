@@ -1,0 +1,12 @@
+#window {
+    color: white;
+    background-color: black;
+}
+
+#input {
+    color: white;
+    border-radius: 0;
+    background-color: black;
+    border: none;
+    border-bottom: 1px solid green;
+}

@@ -1,0 +1,1 @@
+export TEST_EXTEND_LOGIN_SHELL="1"

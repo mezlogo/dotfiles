@@ -1,0 +1,35 @@
+pacman:
+  - uwsm
+  - hyprland
+  - waybar
+  - wofi
+  - kitty
+  - firefox
+  - chromium
+  - wf-recorder
+  - wtype
+  - wf-recorder
+  - wl-clipboard
+  - wlr-randr
+  - xdg-desktop-portal-hyprland
+  - sddm
+  - dunst
+  - slurp
+  - grim
+  - satty
+  - brightnessctl
+  - nerd-fonts
+  - ttf-font-awesome
+  - obsidian
+  - logseq
+  - qt5-wayland
+  - qt6-wayland
+  - mpv
+  - wireshark-cli
+  - wireshark-qt
+  - telegram-desktop
+  - keepassxc
+  - cliphist
+
+aur:
+  - visual-studio-code-bin

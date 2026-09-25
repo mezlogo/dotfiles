@@ -1,0 +1,34 @@
+[core]
+    autocrlf = input
+    pager = delta
+    excludesfile = ~/.gitignore
+
+[alias]
+    f = fetch -p
+    co = checkout
+    br = branch
+    st = status
+    cm = commit -m
+    cam = commit -am
+    ll = "log --pretty=format:%Cgreen%h%Cred%cr%<(24)%C(#ff69b4)%an%C(white)%d%n%C(yellow)%s --numstat"
+    t = describe --abbrev=0 --tags HEAD
+    bdiff = "!f(){ git diff $(git merge-base $1 HEAD) $1; };f"
+    cap = !git cam 'New version' && git push
+    actualbr = !git reflog show --since=\"14 days ago\" --all | awk '{if(\"checkout:\" == $3) print($6 \"\\n\" $8)}' | sort | uniq
+    oldbr = !bash -c 'git br --format=\"%(refname:short)\" | sort | uniq | comm -3 - <(git actualbr)'
+    when = !stat -c %y .git/FETCH_HEAD
+    demo = "!f(){ b=$(git rev-parse --abbrev-ref HEAD); bd=\"$b\"_DEMO;         git stash && git branch -D $bd ; git checkout -b $bd origin/master_hotfix             && git log --reverse --pretty=format:\"%H\" origin/master..$b | xargs -L1 git cherry-pick             && git push origin -f $bd && git checkout $b && git stash pop ; };f"
+    featurePush = "!f() { b=$(git branch --show-current); git add . && git commit -m \"$b\" && git push origin $b; };f"
+
+[user]
+    email = deni.mez@marathonbetops.net
+    name = Mezentsev Denis
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true
+
+[merge]
+    conflictstyle = zdiff3

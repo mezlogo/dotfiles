@@ -1,0 +1,11 @@
+export XCURSOR_SIZE=24
+
+export QT_QPA_PLATFORM=wayland
+export QT_WAYLAND_DISABLE_WINDOWDECORATIO=1
+#export QT_QPA_PLATFORMTHEME=qt5ct
+
+export GDK_BACKEND=wayland
+export SDL_VIDEODRIVER=wayland
+export CLUTTER_BACKEND=wayland
+
+export UWSM_SKIP_MAY_START_CHECK=1

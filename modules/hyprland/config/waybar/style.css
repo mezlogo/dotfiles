@@ -1,0 +1,80 @@
+* {
+    font-family: FontAwesome, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+
+    border: none;
+    color: white;
+    background-color: black;
+    margin: 0;
+    padding: 0;
+}
+
+window#waybar {
+    color: white;
+    background-color: black;
+    border-bottom: 1px solid white;
+}
+
+button {
+    border: none;
+    border-radius: 0;
+}
+
+button:hover {
+    box-shadow: none; /* Remove predefined box-shadow */
+    text-shadow: none; /* Remove predefined text-shadow */
+    background: none; /* Remove predefined background color (white) */
+    transition: none; /* Disable predefined animations */
+}
+
+#workspaces {
+	padding: 0px;
+	margin: 0px;
+}
+
+#workspaces button {
+    border: 1px solid white;
+    margin-right: 1px;
+}
+
+#workspaces button:hover {
+    border: none;
+    background: none;
+}
+
+#workspaces button.active {
+    border: 1px solid green;
+}
+
+#workspaces button.urgent {
+    border: 1px solid red;
+}
+
+
+/* If workspaces is the leftmost module, omit left margin */
+.modules-left > widget:first-child > #workspaces {
+    margin-left: 0;
+}
+
+/* If workspaces is the rightmost module, omit right margin */
+.modules-right > widget:last-child > #workspaces {
+    margin-right: 0;
+}
+
+#pulseaudio,
+#backlight,
+#language,
+#battery,
+#clock,
+#tray {
+    margin-left: 4px;
+    padding-left: 4px;
+    border-left: 1px solid white;
+}
+
+@keyframes blink {
+    to {
+        background-color: #ffffff;
+        color: #000000;
+    }
+}

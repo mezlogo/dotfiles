@@ -1,0 +1,4 @@
+pacman:
+  - qemu-guest-agent
+systemd:
+  - qemu-guest-agent.service

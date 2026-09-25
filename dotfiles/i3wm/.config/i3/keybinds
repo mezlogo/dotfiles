@@ -1,0 +1,55 @@
+bindsym XF86MonBrightnessUp exec ~/.config/i3/scripts/backlight.sh up
+bindsym XF86MonBrightnessDown exec ~/.config/i3/scripts/backlight.sh down
+
+bindsym XF86AudioRaiseVolume exec ~/.config/i3/scripts/volume.sh up
+bindsym XF86AudioLowerVolume exec ~/.config/i3/scripts/volume.sh down
+bindsym XF86AudioMute exec ~/.config/i3/scripts/volume.sh mute
+
+bindsym --release $mod+t exec --no-startup-id flameshot gui
+bindsym $mod+Return exec alacritty -e zsh -c 'tmux new-session -A -s default'
+bindsym $mod+Shift+q kill
+bindsym $mod+d exec rofi -show drun
+bindsym $mod+q exec ~/.config/i3/scripts/layout.sh next
+
+bindsym $mod+x exec alacritty --class=floating_terminal -e sh -c "greenclip print | fzf -e | sed 's/\xC2\xA0/\x0A/g' | sed -z '$ s/\n$//' | xsel -b"
+for_window [class="^floating_terminal$"] floating enable, resize set 50 ppt 50 ppt
+
+
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+bindsym $mod+f fullscreen
+
+bindsym $mod+v split v
+bindsym $mod+semicolon split h
+bindsym $mod+a focus parent
+
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+space focus mode_toggle
+
+bindsym $mod+u sticky toggle
+
+mode "resize" {
+    set $step 200
+    bindsym h resize shrink width $step px or $step ppt
+    bindsym j resize grow height $step px or $step ppt
+    bindsym k resize shrink height $step px or $step ppt
+    bindsym l resize grow width $step px or $step ppt
+
+    # back to normal: Enter or Escape
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+r mode "resize"
