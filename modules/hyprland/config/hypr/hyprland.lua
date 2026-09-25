@@ -113,22 +113,22 @@ hl.config({
 ---------------------
 
 -- Resize submap
-hl.bind(mainMod .. " + r", hl.dsp.submap("resize"))
-
-local rs = "resize"
-
-hl.bind("Right", hl.dsp.window.resize({ x = 100, y = 0 }), { repeating = true, submap = rs })
-hl.bind("Left", hl.dsp.window.resize({ x = -100, y = 0 }), { repeating = true, submap = rs })
-hl.bind("Down", hl.dsp.window.resize({ x = 0, y = 100 }), { repeating = true, submap = rs })
-hl.bind("Up", hl.dsp.window.resize({ x = 0, y = -100 }), { repeating = true, submap = rs })
-
-hl.bind("SHIFT + Right", hl.dsp.window.resize({ x = 10, y = 0 }), { repeating = true, submap = rs })
-hl.bind("SHIFT + Left", hl.dsp.window.resize({ x = -10, y = 0 }), { repeating = true, submap = rs })
-hl.bind("SHIFT + Down", hl.dsp.window.resize({ x = 0, y = 10 }), { repeating = true, submap = rs })
-hl.bind("SHIFT + Up", hl.dsp.window.resize({ x = 0, y = -10 }), { repeating = true, submap = rs })
-
-hl.bind("Escape", hl.dsp.submap("reset"), { submap = rs })
-hl.bind("Return", hl.dsp.submap("reset"), { submap = rs })
+-- hl.bind(mainMod .. " + r", hl.dsp.submap("resize"))
+--
+-- local rs = "resize"
+--
+-- hl.bind("Right", hl.dsp.window.resize({ x = 100, y = 0 }), { repeating = true, submap = rs })
+-- hl.bind("Left", hl.dsp.window.resize({ x = -100, y = 0 }), { repeating = true, submap = rs })
+-- hl.bind("Down", hl.dsp.window.resize({ x = 0, y = 100 }), { repeating = true, submap = rs })
+-- hl.bind("Up", hl.dsp.window.resize({ x = 0, y = -100 }), { repeating = true, submap = rs })
+--
+-- hl.bind("SHIFT + Right", hl.dsp.window.resize({ x = 10, y = 0 }), { repeating = true, submap = rs })
+-- hl.bind("SHIFT + Left", hl.dsp.window.resize({ x = -10, y = 0 }), { repeating = true, submap = rs })
+-- hl.bind("SHIFT + Down", hl.dsp.window.resize({ x = 0, y = 10 }), { repeating = true, submap = rs })
+-- hl.bind("SHIFT + Up", hl.dsp.window.resize({ x = 0, y = -10 }), { repeating = true, submap = rs })
+--
+-- hl.bind("Escape", hl.dsp.submap("reset"), { submap = rs })
+-- hl.bind("Return", hl.dsp.submap("reset"), { submap = rs })
 
 -- Main binds
 hl.bind(mainMod .. " + Return", hl.dsp.exec_cmd(terminal .. " tmux new-session -A -s default"))
