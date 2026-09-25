@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=PersonalBrowser
+Comment=Personal browsing profile with isolated user data
+Exec=chromium --user-data-dir=data/chromium_profiles/personal/
+Terminal=false
+Type=Application
+Categories=Network;WebBrowser;
+Icon=chromium
+StartupWMClass=Chromium

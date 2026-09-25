@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=PublicBrowser
+Comment=Public browsing
+Exec=chromium --user-data-dir=data/chromium_profiles/public/
+Terminal=false
+Type=Application
+Categories=Network;WebBrowser;
+Icon=chromium
+StartupWMClass=Chromium

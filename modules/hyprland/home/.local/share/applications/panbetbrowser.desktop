@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=PanbetBrowser
+Comment=Panbet browsing 
+Exec=chromium --user-data-dir=data/chromium_profiles/panbet/
+Terminal=false
+Type=Application
+Categories=Network;WebBrowser;
+Icon=chromium
+StartupWMClass=Chromium
