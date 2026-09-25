@@ -115,20 +115,20 @@ hl.config({
 -- Resize submap
 hl.bind(mainMod .. " + R", hl.dsp.submap("resize"))
 
-hl.submap("resize", function()
-  hl.bind("right", hl.dsp.window.resize({ x = 100, y = 0 }), { repeating = true })
-  hl.bind("left",  hl.dsp.window.resize({ x = -100, y = 0 }), { repeating = true })
-  hl.bind("down",  hl.dsp.window.resize({ x = 0, y = 100 }), { repeating = true })
-  hl.bind("up",    hl.dsp.window.resize({ x = 0, y = -100 }), { repeating = true })
+local rs = "resize"
 
-  hl.bind("SHIFT + right", hl.dsp.window.resize({ x = 10, y = 0 }), { repeating = true })
-  hl.bind("SHIFT + left",  hl.dsp.window.resize({ x = -10, y = 0 }), { repeating = true })
-  hl.bind("SHIFT + down",  hl.dsp.window.resize({ x = 0, y = 10 }), { repeating = true })
-  hl.bind("SHIFT + up",    hl.dsp.window.resize({ x = 0, y = -10 }), { repeating = true })
+hl.bind("right", hl.dsp.window.resize({ x = 100,  y = 0   }), { repeating = true, submap = rs })
+hl.bind("left",  hl.dsp.window.resize({ x = -100, y = 0   }), { repeating = true, submap = rs })
+hl.bind("down",  hl.dsp.window.resize({ x = 0,    y = 100 }), { repeating = true, submap = rs })
+hl.bind("up",    hl.dsp.window.resize({ x = 0,    y = -100}), { repeating = true, submap = rs })
 
-  hl.bind("escape", hl.dsp.submap("reset"))
-  hl.bind("return", hl.dsp.submap("reset"))
-end)
+hl.bind("SHIFT + right", hl.dsp.window.resize({ x = 10,  y = 0  }), { repeating = true, submap = rs })
+hl.bind("SHIFT + left",  hl.dsp.window.resize({ x = -10, y = 0  }), { repeating = true, submap = rs })
+hl.bind("SHIFT + down",  hl.dsp.window.resize({ x = 0,   y = 10 }), { repeating = true, submap = rs })
+hl.bind("SHIFT + up",    hl.dsp.window.resize({ x = 0,   y = -10}), { repeating = true, submap = rs })
+
+hl.bind("escape", hl.dsp.submap("reset"), { submap = rs })
+hl.bind("return", hl.dsp.submap("reset"), { submap = rs })
 
 -- Main binds
 hl.bind(mainMod .. " + RETURN", hl.dsp.exec_cmd(terminal .. " tmux new-session -A -s default"))
