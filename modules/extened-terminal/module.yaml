@@ -26,6 +26,9 @@ pacman:
   - tree-sitter-cli
   - tmux
   - keyd
+
 usersystemd:
   - ssh-agent.service
 
+systemd:
+  - keyd.service

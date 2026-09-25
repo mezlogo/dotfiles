@@ -33,3 +33,6 @@ pacman:
 
 aur:
   - visual-studio-code-bin
+
+systemd:
+  - sddm.service
