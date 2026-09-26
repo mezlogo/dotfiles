@@ -17,7 +17,6 @@ pacman:
   - slurp
   - grim
   - satty
-  - brightnessctl
   - nerd-fonts
   - ttf-font-awesome
   - obsidian
