@@ -21,7 +21,6 @@ pacman:
   - nerd-fonts
   - ttf-font-awesome
   - obsidian
-  - logseq
   - qt5-wayland
   - qt6-wayland
   - mpv
