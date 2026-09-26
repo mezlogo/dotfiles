@@ -25,6 +25,7 @@ pacman:
   - tree-sitter-cli
   - tmux
   - keyd
+  - gping
 
 aur:
   - delta
