@@ -42,7 +42,15 @@ hl.on("hyprland.start", function()
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("TERM", "kitty")
-hl.env("SSH_AUTH_SOCK", "$XDG_RUNTIME_DIR/ssh-agent.socket")
+
+-- Dynamically fetch XDG_RUNTIME_DIR from the environment
+local runtime_dir = os.getenv("XDG_RUNTIME_DIR")
+if runtime_dir then
+    hl.env("SSH_AUTH_SOCK", runtime_dir .. "/ssh-agent.socket")
+else
+    -- Fallback in case XDG_RUNTIME_DIR isn't set yet
+    hl.env("SSH_AUTH_SOCK", "/run/user/1000/ssh-agent.socket")
+end
 
 -----------------------
 ---- LOOK AND FEEL ----
