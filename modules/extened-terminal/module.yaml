@@ -30,6 +30,7 @@ pacman:
   - tree
 
 aur:
+  - leaf-markdown-viewer-bin
 
 usersystemd:
   - ssh-agent.service
