@@ -1,5 +1,6 @@
 modules:
   - base
+  - base-laptop
   - base-amd
   - extened-terminal
   - hyprland
