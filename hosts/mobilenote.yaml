@@ -2,5 +2,6 @@ modules:
   - base
   - base-laptop
   - base-amd
+  - base-ssh
   - extened-terminal
   - hyprland
