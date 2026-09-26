@@ -6,7 +6,7 @@ pacman:
   - git
   - iptables
   - iwd
-  - linux-firmware-intel
+  - linux-firmware
   - linux-lts
   - mkinitcpio
   - openssh

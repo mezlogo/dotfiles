@@ -1,5 +1,4 @@
 pacman:
-  - linux-firmware-amd
   - mesa
   - libva-mesa-driver
   - vulkan-radeon
