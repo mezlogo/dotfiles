@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Resolve working directory
+CWD_DIR="$(pwd)"
+
+show_help() {
+    cat << EOF
+Usage: $(basename "$0") <glob-or-file>...
+
+Print unique files matching the given globs/paths, wrapped in context markers.
+
+Output has an xml like style with markdown quotes for file content:
+
+```xml
+<context>
+  <manifest>
+    <file path="src/main.py" language="python" type="source"/>
+    <file path="logs/app.log" language="text" type="log"/>
+    <file path="config/settings.json" language="json" type="config"/>
+  </manifest>
+
+  <file path="src/main.py" language="python" type="source">
+```python
+# source code here
+```
+  </file>
+
+  <file path="logs/app.log" language="text" type="log">
+```
+2026-09-26 10:00:01 ERROR ...
+2026-09-26 10:00:02 WARN ...
+```
+  </file>
+
+  <file path="config/settings.json" language="json" type="config">
+```json
+{
+  "debug": true,
+  "port": 8080
+}
+```
+  </file>
+</context>
+```
+
+Used simplest possible detection based on file extension with fallback for `file`.
+
+Ignore binaries files.
+
+Examples:
+  $(basename "$0") '*.md'
+  $(basename "$0") ./README.md src/**/*.py
+EOF
+}
+
+print_context() {
+    cd "$CWD_DIR"
+    mapfile -t TARGET_FILES < <(
+        for CURRENT_ARG in "$@"; do
+            if [[ "$CURRENT_ARG" == "./"* ]]; then
+                printf '%s\n' "$CURRENT_ARG"
+            elif [[ "$CURRENT_ARG" == */* ]]; then
+                fd -t f -p -g "$CURRENT_ARG"
+            else
+                fd -t f -g "$CURRENT_ARG"
+            fi
+        done | sort -u
+    )
+
+    echo "FILES FOR CONTEXT:"
+    for file in "${TARGET_FILES[@]}"; do
+        if [[ -f "$file" ]]; then
+            echo -e "- FILE: $file\n\"\"\"\n\`\`\`"
+            cat "$file"
+            echo -e "\`\`\`\n\"\"\""
+        else
+            echo "Warning: Skipping non-existent file '$file'" >&2
+        fi
+    done
+}
+
+case "${1:-}" in
+    -h|--help|help|"")
+        show_help
+        ;;
+    *)
+        print_context "$@"
+        ;;
+esac
