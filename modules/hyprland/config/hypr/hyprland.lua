@@ -46,10 +46,10 @@ hl.env("TERM", "kitty")
 -- Dynamically fetch XDG_RUNTIME_DIR from the environment
 local runtime_dir = os.getenv("XDG_RUNTIME_DIR")
 if runtime_dir then
-    hl.env("SSH_AUTH_SOCK", runtime_dir .. "/ssh-agent.socket")
+--    hl.env("SSH_AUTH_SOCK", runtime_dir .. "/ssh-agent.socket")
 else
     -- Fallback in case XDG_RUNTIME_DIR isn't set yet
-    hl.env("SSH_AUTH_SOCK", "/run/user/1000/ssh-agent.socket")
+--    hl.env("SSH_AUTH_SOCK", "/run/user/1000/ssh-agent.socket")
 end
 
 -----------------------
