@@ -72,9 +72,39 @@ is_binary() {
     [[ "$enc" == "binary" ]]
 }
 
+shebang_interpreter() {
+    # Prints the interpreter basename if the file starts with #!, else nothing.
+    local first
+    IFS= read -r first < "$1" || true
+    [[ "$first" == '#!'* ]] || return 0
+    # Strip leading "#!" and whitespace, take first token
+    first="${first#\#!}"
+    first="${first#"${first%%[![:space:]]*}"}"
+    first="${first%%[[:space:]]*}"
+    # If it's /usr/bin/env, use the next non-option token
+    if [[ "$(basename -- "$first")" == "env" ]]; then
+        local line
+        IFS= read -r line < "$1" || true
+        line="${line#\#!}"
+        # shellcheck disable=SC2206
+        local parts=($line)
+        local i=1
+        while [[ $i -lt ${#parts[@]} ]]; do
+            local p="${parts[$i]}"
+            case "$p" in
+                -S) i=$((i+1)); continue ;;
+                -*) i=$((i+1)); continue ;;
+                *)  echo "$(basename -- "$p")"; return ;;
+            esac
+        done
+        return
+    fi
+    basename -- "$first"
+}
+
 detect_language() {
     local file="$1"
-    local base ext mime
+    local base ext mime shebang
     base="$(basename -- "$file")"
 
     # Special extension-less basenames
@@ -91,6 +121,24 @@ detect_language() {
         ext=""
     fi
     ext="${ext,,}"
+
+    # No extension: try shebang first
+    if [[ -z "$ext" ]]; then
+        shebang="$(shebang_interpreter "$file" || true)"
+        case "$shebang" in
+            bash|sh|dash|ksh)       echo bash; return ;;
+            zsh)                    echo zsh;  return ;;
+            fish)                   echo fish; return ;;
+            python|python2|python3) echo python; return ;;
+            ruby)                   echo ruby; return ;;
+            perl)                   echo perl; return ;;
+            node|nodejs)            echo javascript; return ;;
+            php)                    echo php;  return ;;
+            lua)                    echo lua;  return ;;
+            awk|gawk)               echo awk;  return ;;
+            *) ;;  # fall through to extension/mime handling
+        esac
+    fi
 
     case "$ext" in
         py|pyw|pyi)             echo python ;;
@@ -150,7 +198,6 @@ detect_language() {
         tsv)                    echo tsv ;;
         diff|patch)             echo diff ;;
         *)
-            # Fallback: ask \`file\`
             mime="$(file --mime-type -b -- "$file" 2>/dev/null || true)"
             case "$mime" in
                 */json)          echo json ;;
@@ -169,7 +216,7 @@ detect_language() {
 
 detect_type() {
     local file="$1"
-    local base ext
+    local base ext shebang
     base="$(basename -- "$file")"
 
     case "$base" in
@@ -184,12 +231,21 @@ detect_type() {
     fi
     ext="${ext,,}"
 
+    # Extension-less file with a shebang => script
+    if [[ -z "$ext" ]]; then
+        shebang="$(shebang_interpreter "$file" || true)"
+        if [[ -n "$shebang" ]]; then
+            echo script; return
+        fi
+    fi
+
     case "$ext" in
         log|out|err)                                        echo log ;;
         json|yaml|yml|toml|ini|cfg|conf|env|properties)     echo config ;;
         csv|tsv|parquet|avro)                               echo data ;;
         md|rst|txt|adoc)                                    echo doc ;;
-        py|pyw|pyi|js|mjs|cjs|ts|mts|cts|tsx|jsx|rb|go|rs|java|kt|kts|scala|c|h|cc|cpp|cxx|hpp|hxx|hh|cs|php|swift|sh|bash|zsh|fish|ps1|psm1|sql|html|htm|css|scss|sass|less|lua|pl|pm|r|dart|vue|svelte|tf|tfvars|hcl|proto|graphql|gql|diff|patch)
+        sh|bash|zsh|fish|ps1|psm1|bat|cmd)                  echo script ;;
+        py|pyw|pyi|js|mjs|cjs|ts|mts|cts|tsx|jsx|rb|go|rs|java|kt|kts|scala|c|h|cc|cpp|cxx|hpp|hxx|hh|cs|php|swift|sql|html|htm|css|scss|sass|less|lua|pl|pm|r|dart|vue|svelte|tf|tfvars|hcl|proto|graphql|gql|diff|patch)
                                                             echo source ;;
         *)                                                  echo other ;;
     esac

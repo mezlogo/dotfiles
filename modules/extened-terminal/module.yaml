@@ -26,9 +26,9 @@ pacman:
   - tmux
   - keyd
   - gping
+  - git-delta
 
 aur:
-  - delta
 
 usersystemd:
   - ssh-agent.service
