@@ -1,0 +1,366 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Resolve working directory
+CWD_DIR="$(pwd)"
+
+show_help() {
+    cat <<EOF
+Usage: $(basename "$0") <glob-or-file>...
+
+Print unique files matching the given globs/paths, wrapped in context markers.
+
+Output has an xml like style with markdown quotes for file content:
+
+\`\`\`xml
+<context>
+  <manifest>
+    <file path="src/main.py" language="python" type="source"/>
+    <file path="logs/app.log" language="text" type="log"/>
+    <file path="config/settings.json" language="json" type="config"/>
+  </manifest>
+
+  <file path="src/main.py" language="python" type="source">
+\`\`\`python
+# source code here
+\`\`\`
+  </file>
+
+  <file path="logs/app.log" language="text" type="log">
+\`\`\`
+2026-09-26 10:00:01 ERROR ...
+2026-09-26 10:00:02 WARN ...
+\`\`\`
+  </file>
+
+  <file path="config/settings.json" language="json" type="config">
+\`\`\`json
+{
+  "debug": true,
+  "port": 8080
+}
+\`\`\`
+  </file>
+</context>
+\`\`\`
+
+Used simplest possible detection based on file extension with fallback for \`file\`.
+
+Ignore binaries files.
+
+Examples:
+  $(basename "$0") '*.md'
+  $(basename "$0") ./README.md src/**/*.py
+EOF
+}
+
+# ---------------------------------------------------------------- helpers ---
+
+xml_escape() {
+    local s="$1"
+    s="${s//&/&amp;}"
+    s="${s//</&lt;}"
+    s="${s//>/&gt;}"
+    s="${s//\"/&quot;}"
+    printf '%s' "$s"
+}
+
+is_binary() {
+    local enc
+    enc="$(file --mime-encoding -b -- "$1" 2>/dev/null || true)"
+    [[ "$enc" == "binary" ]]
+}
+
+shebang_interpreter() {
+    # Prints the interpreter basename if the file starts with #!, else nothing.
+    local first
+    IFS= read -r first < "$1" || true
+    [[ "$first" == '#!'* ]] || return 0
+    # Strip leading "#!" and whitespace, take first token
+    first="${first#\#!}"
+    first="${first#"${first%%[![:space:]]*}"}"
+    first="${first%%[[:space:]]*}"
+    # If it's /usr/bin/env, use the next non-option token
+    if [[ "$(basename -- "$first")" == "env" ]]; then
+        local line
+        IFS= read -r line < "$1" || true
+        line="${line#\#!}"
+        # shellcheck disable=SC2206
+        local parts=($line)
+        local i=1
+        while [[ $i -lt ${#parts[@]} ]]; do
+            local p="${parts[$i]}"
+            case "$p" in
+                -S) i=$((i+1)); continue ;;
+                -*) i=$((i+1)); continue ;;
+                *)  echo "$(basename -- "$p")"; return ;;
+            esac
+        done
+        return
+    fi
+    basename -- "$first"
+}
+
+detect_language() {
+    local file="$1"
+    local base ext mime shebang
+    base="$(basename -- "$file")"
+
+    # Special extension-less basenames
+    case "$base" in
+        Dockerfile|dockerfile|Containerfile) echo dockerfile; return ;;
+        Makefile|makefile|GNUmakefile)       echo makefile;   return ;;
+        CMakeLists.txt)                      echo cmake;      return ;;
+        Rakefile|Gemfile|Vagrantfile)        echo ruby;       return ;;
+    esac
+
+    if [[ "$base" == *.* ]]; then
+        ext="${base##*.}"
+    else
+        ext=""
+    fi
+    ext="${ext,,}"
+
+    # No extension: try shebang first
+    if [[ -z "$ext" ]]; then
+        shebang="$(shebang_interpreter "$file" || true)"
+        case "$shebang" in
+            bash|sh|dash|ksh)       echo bash; return ;;
+            zsh)                    echo zsh;  return ;;
+            fish)                   echo fish; return ;;
+            python|python2|python3) echo python; return ;;
+            ruby)                   echo ruby; return ;;
+            perl)                   echo perl; return ;;
+            node|nodejs)            echo javascript; return ;;
+            php)                    echo php;  return ;;
+            lua)                    echo lua;  return ;;
+            awk|gawk)               echo awk;  return ;;
+            *) ;;  # fall through to extension/mime handling
+        esac
+    fi
+
+    case "$ext" in
+        py|pyw|pyi)             echo python ;;
+        js|mjs|cjs)             echo javascript ;;
+        ts|mts|cts)             echo typescript ;;
+        tsx)                    echo tsx ;;
+        jsx)                    echo jsx ;;
+        rb)                     echo ruby ;;
+        go)                     echo go ;;
+        rs)                     echo rust ;;
+        java)                   echo java ;;
+        kt|kts)                 echo kotlin ;;
+        scala)                  echo scala ;;
+        c)                      echo c ;;
+        h)                      echo c ;;
+        cc|cpp|cxx|hpp|hxx|hh)  echo cpp ;;
+        cs)                     echo csharp ;;
+        php)                    echo php ;;
+        swift)                  echo swift ;;
+        m|mm)                   echo objectivec ;;
+        sh)                     echo bash ;;
+        bash)                   echo bash ;;
+        zsh)                    echo zsh ;;
+        fish)                   echo fish ;;
+        ps1|psm1)               echo powershell ;;
+        bat|cmd)                echo bat ;;
+        sql)                    echo sql ;;
+        html|htm)               echo html ;;
+        css)                    echo css ;;
+        scss)                   echo scss ;;
+        sass)                   echo sass ;;
+        less)                   echo less ;;
+        json)                   echo json ;;
+        jsonc)                  echo jsonc ;;
+        json5)                  echo json5 ;;
+        yaml|yml)               echo yaml ;;
+        toml)                   echo toml ;;
+        ini|cfg|conf)           echo ini ;;
+        env)                    echo dotenv ;;
+        xml)                    echo xml ;;
+        svg)                    echo xml ;;
+        md|markdown)            echo markdown ;;
+        rst)                    echo rst ;;
+        adoc)                   echo asciidoc ;;
+        tex)                    echo latex ;;
+        lua)                    echo lua ;;
+        pl|pm)                  echo perl ;;
+        r)                      echo r ;;
+        dart)                   echo dart ;;
+        vue)                    echo vue ;;
+        svelte)                 echo svelte ;;
+        tf|tfvars|hcl)          echo hcl ;;
+        proto)                  echo protobuf ;;
+        graphql|gql)            echo graphql ;;
+        log|txt)                echo text ;;
+        csv)                    echo csv ;;
+        tsv)                    echo tsv ;;
+        diff|patch)             echo diff ;;
+        *)
+            mime="$(file --mime-type -b -- "$file" 2>/dev/null || true)"
+            case "$mime" in
+                */json)          echo json ;;
+                */xml)           echo xml ;;
+                */html)          echo html ;;
+                */x-shellscript) echo bash ;;
+                */x-python)      echo python ;;
+                */x-ruby)        echo ruby ;;
+                */x-perl)        echo perl ;;
+                */javascript)    echo javascript ;;
+                text/*|*)        echo text ;;
+            esac
+            ;;
+    esac
+}
+
+detect_type() {
+    local file="$1"
+    local base ext shebang
+    base="$(basename -- "$file")"
+
+    case "$base" in
+        Dockerfile|dockerfile|Containerfile|Makefile|makefile|GNUmakefile|CMakeLists.txt)
+            echo source; return ;;
+    esac
+
+    if [[ "$base" == *.* ]]; then
+        ext="${base##*.}"
+    else
+        ext=""
+    fi
+    ext="${ext,,}"
+
+    # Extension-less file with a shebang => script
+    if [[ -z "$ext" ]]; then
+        shebang="$(shebang_interpreter "$file" || true)"
+        if [[ -n "$shebang" ]]; then
+            echo script; return
+        fi
+    fi
+
+    case "$ext" in
+        log|out|err)                                        echo log ;;
+        json|yaml|yml|toml|ini|cfg|conf|env|properties)     echo config ;;
+        csv|tsv|parquet|avro)                               echo data ;;
+        md|rst|txt|adoc)                                    echo doc ;;
+        sh|bash|zsh|fish|ps1|psm1|bat|cmd)                  echo script ;;
+        py|pyw|pyi|js|mjs|cjs|ts|mts|cts|tsx|jsx|rb|go|rs|java|kt|kts|scala|c|h|cc|cpp|cxx|hpp|hxx|hh|cs|php|swift|sql|html|htm|css|scss|sass|less|lua|pl|pm|r|dart|vue|svelte|tf|tfvars|hcl|proto|graphql|gql|diff|patch)
+                                                            echo source ;;
+        *)                                                  echo other ;;
+    esac
+}
+
+# Return a backtick fence long enough to safely wrap the file's content.
+make_fence() {
+    local n
+    n="$(awk '
+        {
+            run = 0
+            for (i = 1; i <= length($0); i++) {
+                if (substr($0, i, 1) == "`") {
+                    run++
+                    if (run > max) max = run
+                } else {
+                    run = 0
+                }
+            }
+        }
+        END {
+            if (max < 3) print 3
+            else         print max + 1
+        }
+    ' "$1")"
+    printf '%*s' "$n" '' | tr ' ' '`'
+}
+
+# ------------------------------------------------------------- main logic ---
+
+print_context() {
+    cd "$CWD_DIR"
+
+    local -a TARGET_FILES=()
+    mapfile -t TARGET_FILES < <(
+        for CURRENT_ARG in "$@"; do
+            if [[ "$CURRENT_ARG" == "./"* ]]; then
+                printf '%s\n' "$CURRENT_ARG"
+            elif [[ "$CURRENT_ARG" == */* ]]; then
+                fd -t f -p -g "$CURRENT_ARG"
+            else
+                fd -t f -g "$CURRENT_ARG"
+            fi
+        done | sort -u
+    )
+
+    # Filter: keep only existing, non-binary, regular files
+    local -a FILES=()
+    local f
+    if [[ ${#TARGET_FILES[@]} -gt 0 ]]; then
+        for f in "${TARGET_FILES[@]}"; do
+            [[ -z "$f" ]] && continue
+            if [[ ! -f "$f" ]]; then
+                echo "Warning: Skipping non-existent file '$f'" >&2
+                continue
+            fi
+            if is_binary "$f"; then
+                echo "Warning: Skipping binary file '$f'" >&2
+                continue
+            fi
+            FILES+=("$f")
+        done
+    fi
+
+    if [[ ${#FILES[@]} -eq 0 ]]; then
+        echo "No files matched." >&2
+        return 1
+    fi
+
+    # Manifest
+    echo "<context>"
+    echo "  <manifest>"
+    for f in "${FILES[@]}"; do
+        local path lang ftype
+        path="$(xml_escape "$f")"
+        lang="$(detect_language "$f")"
+        ftype="$(detect_type "$f")"
+        printf '    <file path="%s" language="%s" type="%s"/>\n' \
+            "$path" "$lang" "$ftype"
+    done
+    echo "  </manifest>"
+    echo
+
+    # Per-file blocks
+    for f in "${FILES[@]}"; do
+        local path lang ftype fence needs_newline
+        path="$(xml_escape "$f")"
+        lang="$(detect_language "$f")"
+        ftype="$(detect_type "$f")"
+        fence="$(make_fence "$f")"
+
+        printf '  <file path="%s" language="%s" type="%s">\n' \
+            "$path" "$lang" "$ftype"
+        printf '%s%s\n' "$fence" "$lang"
+
+        needs_newline=0
+        if [[ -s "$f" ]] && [[ "$(tail -c1 -- "$f" | wc -l | tr -d ' ')" == "0" ]]; then
+            needs_newline=1
+        fi
+        cat -- "$f"
+        [[ $needs_newline -eq 1 ]] && echo
+
+        printf '%s\n' "$fence"
+        echo "  </file>"
+        echo
+    done
+
+    echo "</context>"
+}
+
+case "${1:-}" in
+    -h|--help|help|"")
+        show_help
+        ;;
+    *)
+        print_context "$@"
+        ;;
+esac
