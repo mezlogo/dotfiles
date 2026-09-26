@@ -27,6 +27,7 @@ pacman:
   - keyd
   - gping
   - git-delta
+  - tree
 
 aur:
 
