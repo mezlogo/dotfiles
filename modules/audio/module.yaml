@@ -4,7 +4,7 @@ pacman:
   - pipewire-alsa
   - wireplumber
   - pavucontrol
-  - alsa-utlis
+  - alsa-utils
 usersystemd:
   - wireplumber.service
   - pipewire.socket
