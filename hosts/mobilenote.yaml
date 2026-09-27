@@ -2,8 +2,9 @@ modules:
   - base
   - base-laptop
   - base-amd
+  - base-gpu
   - base-ssh
-  - audio
+  #- audio
   - bluetooth
   - extened-terminal
   - hyprland
