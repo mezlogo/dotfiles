@@ -1,0 +1,11 @@
+pacman:
+  - pipewire
+  - pipewire-pulse
+  - pipewire-alsa
+  - wireplumber
+  - pavucontrol
+  - alsa-utlis
+usersystemd:
+  - wireplumber.service
+  - pipewire.socket
+  - pipewire-pulse.socket

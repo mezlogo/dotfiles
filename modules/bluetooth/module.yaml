@@ -1,0 +1,7 @@
+pacman:
+  - bluez
+  - bluez-utils
+  #- libspa-bluetooth
+  - blueman
+systemd:
+  - bluetooth

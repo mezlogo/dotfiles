@@ -1,0 +1,1 @@
+- add group for bt device: `sudo usermod -aG lp $USER`
