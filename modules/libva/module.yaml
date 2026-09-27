@@ -1,0 +1,3 @@
+pacman:
+  - libva-mesa-driver
+  - libva-utils

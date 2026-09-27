@@ -5,6 +5,7 @@ modules:
   - base-gpu
   - base-ssh
   - audio
+  - libva
   - bluetooth
   - extened-terminal
   - hyprland
