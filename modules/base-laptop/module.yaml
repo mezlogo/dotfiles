@@ -1,2 +1,5 @@
 pacman:
   - brightnessctl
+  - power-profiles-daemon
+systemd:
+  - power-profiles-daemon.service

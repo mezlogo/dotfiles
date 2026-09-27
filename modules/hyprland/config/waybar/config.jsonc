@@ -10,13 +10,13 @@
         "hyprland/workspaces"
     ],
     "modules-right": [
+        "power-profiles-daemon",
         "pulseaudio",
         "backlight",
         "hyprland/language",
         "battery",
         "clock",
         "tray"
-        //, "custom/power"
     ],
     "hyprland/language": {
         "format": "{}",
