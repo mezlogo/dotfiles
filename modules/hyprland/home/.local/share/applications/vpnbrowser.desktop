@@ -2,7 +2,7 @@
 Version=1.0
 Name=VpnBrowser
 Comment=Vpn browser
-Exec=chromium --user-data-dir=data/chromium_profiles/vpn/
+Exec=chromium --user-data-dir=data/chromium_profiles/vpn/ --proxy-server="socks5://127.0.0.1:2080"
 Terminal=false
 Type=Application
 Categories=Network;WebBrowser;
