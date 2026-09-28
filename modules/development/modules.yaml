@@ -1,0 +1,4 @@
+pacman:
+  - jdk25-openjdk
+  - maven
+  - gradle

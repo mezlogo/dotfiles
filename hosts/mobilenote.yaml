@@ -9,3 +9,4 @@ modules:
   - bluetooth
   - extened-terminal
   - hyprland
+  - network
