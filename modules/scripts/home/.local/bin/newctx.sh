@@ -11,6 +11,7 @@
 # Examples:
 #   ctx.sh '!date' '!uname -a' '*.py' './README.md' '/etc/hosts'
 #   ctx.sh '!env | grep -i ssh' 'src/**/*.rs'
+#   ctx.sh -s '!false' '!env | grep -i ssh' 'src/**/*.rs'
 
 set -uo pipefail
 
@@ -265,11 +266,16 @@ print_stream() {
 
 print_process() {
     local cmd="$1"
+    local silence_zero="${2:-0}"
     local out err code=0
     out="$(mktemp)"
     err="$(mktemp)"
 
     bash -c "$cmd" >"$out" 2>"$err" || code=$?
+
+    if (( code != 0 && ! silence_zero )); then
+        printf 'WARN: %d exit code is not zero for proc: %s\n' "$code" "$cmd" >&2
+    fi
 
     printf '  <process name="%s" exit="%d">\n' "$(xml_escape "$cmd")" "$code"
     print_stream stdout "$out"
@@ -305,7 +311,7 @@ print_file_block() {
 
 show_help() {
     cat <<'EOF'
-Usage: ctx.sh <item>...
+Usage: ctx.sh [-s|--silence-zero] <item>...
 
 Each item is one of:
   !command         Execute as shell; emit <process name=... exit=...>
@@ -314,6 +320,12 @@ Each item is one of:
   *pattern*        File glob -> `fd -g <pattern>`.
   pattern          File search -> `fd <pattern>`.
 
+Options:
+  -s, --silence-zero  Do not warn on stderr for non-zero exit codes.
+                      (By default a warning is printed for every process
+                      that exits non-zero.)
+  -h, --help          Show this help.
+
 Files are collected into a <manifest> at the top (deduplicated, in first-seen
 order). Process and file blocks then appear in the order the arguments were
 given.
@@ -321,11 +333,23 @@ given.
 Examples:
   ctx.sh '!date' '!uname -a' '*.py' './README.md'
   ctx.sh '!env | grep -i ssh' 'src/**/*.rs' '/etc/hosts'
+  ctx.sh -s '!false' 'src/**/*.rs'
 EOF
 }
 
 main() {
     cd "$CWD_DIR" || exit 1
+
+    local silence_zero=0
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -h|--help) show_help; return 0 ;;
+            -s|--silence-zero) silence_zero=1; shift ;;
+            --) shift; break ;;
+            -*) echo "error: unknown option: $1" >&2; show_help >&2; return 2 ;;
+            *) break ;;
+        esac
+    done
 
     if [[ $# -eq 0 ]]; then
         show_help >&2
@@ -366,7 +390,7 @@ main() {
     declare -A seen_emit=()
     for arg in "$@"; do
         if [[ "$arg" == '!'* ]]; then
-            print_process "${arg:1}"
+            print_process "${arg:1}" "$silence_zero"
         else
             while IFS= read -r f; do
                 [[ -z "$f" || ! -f "$f" ]] && continue
