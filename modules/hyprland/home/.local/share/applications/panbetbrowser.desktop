@@ -2,7 +2,7 @@
 Version=1.0
 Name=PanbetBrowser
 Comment=Panbet browsing 
-Exec=chromium --user-data-dir=data/chromium_profiles/panbet/
+Exec=chromium --user-data-dir=data/chromium_profiles/panbet/ --proxy-pac-url=http://localhost:21201/fix_repl.pac
 Terminal=false
 Type=Application
 Categories=Network;WebBrowser;
