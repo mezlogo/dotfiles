@@ -1,0 +1,11 @@
+modules:
+  - base
+  - base-laptop
+  - base-gpu
+  - base-ssh
+  - audio
+  - libva
+  - bluetooth
+  - extened-terminal
+  - hyprland
+  - network

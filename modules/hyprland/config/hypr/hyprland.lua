@@ -32,7 +32,8 @@ hl.on("hyprland.start", function()
         hl.exec_cmd("wl-paste --type image --watch cliphist store")
 
         -- Start btop on workspace 5 silently
-        hl.exec_cmd("hyprctl dispatch exec '[workspace 5 silent] kitty btop'")
+        hl.exec_cmd("kitty btop")
+    
         end)
 
 -------------------------------
@@ -196,6 +197,8 @@ hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true 
 hl.bind(mainMod .. " + grave", hl.dsp.exec_cmd("$HOME/repos/mezlogo/forme/projects/asr_nemotron_wtype/push_to_talk_unix_client.sh"))
 hl.bind(mainMod .. " + grave", hl.dsp.exec_cmd("$HOME/repos/mezlogo/forme/projects/asr_nemotron_wtype/release.sh"), { release = true })
 
+    
+
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----
 --------------------------------
@@ -215,3 +218,5 @@ hl.window_rule({
 
 hl.workspace_rule({ workspace = "5", monitor = "eDP-1", default = true })
 hl.workspace_rule({ workspace = "6", monitor = "eDP-1" })
+
+    
