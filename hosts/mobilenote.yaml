@@ -10,3 +10,4 @@ modules:
   - extened-terminal
   - hyprland
   - network
+  - scripts
