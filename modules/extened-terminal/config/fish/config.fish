@@ -41,4 +41,4 @@ if status is-interactive
     #eval "$(mise activate fish)"
 end
 
-fish_add_path -g ~/.local/bin
+fish_add_path -g ~/.local/bin ~/go/bin
