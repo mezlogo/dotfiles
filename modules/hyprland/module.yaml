@@ -19,7 +19,11 @@ pacman:
   - satty
   - nerd-fonts
   - ttf-font-awesome
+  - ttf-jetbrains-mono-nerd
+  - noto-fonts
+  - noto-fonts-cjk
   - noto-fonts-emoji
+  - ttf-dejavu
   - obsidian
   - qt5-wayland
   - qt6-wayland
