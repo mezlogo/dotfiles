@@ -7,7 +7,7 @@ pacman:
   - iptables
   - iwd
   - linux-firmware
-  - linux-lts
+  - linux
   - mkinitcpio
   - openssh
   - reflector
