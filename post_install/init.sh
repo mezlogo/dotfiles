@@ -8,6 +8,5 @@ mkdir -p ~/.ssh
 
 chmod 700 ~/.ssh
 
-# For archsync support
-sudo pacman -S --needed libxcrypt-compat
-
+# For bluetooth device connection from user space
+sudo usermod -aG lp $USER
