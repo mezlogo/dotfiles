@@ -27,6 +27,7 @@ pacman:
   - obsidian
   - qt5-wayland
   - qt6-wayland
+  - qt6-multimedia-ffmpeg
   - mpv
   - wireshark-cli
   - wireshark-qt

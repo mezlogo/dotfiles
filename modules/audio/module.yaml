@@ -1,5 +1,6 @@
 pacman:
   - pipewire
+  - pipewire-jack
   - pipewire-pulse
   - pipewire-alsa
   - wireplumber
