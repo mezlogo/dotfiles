@@ -1,0 +1,6 @@
+pacman:
+  - xrt
+  - xrt-plugin-amdxdna
+  - linux-headers
+  - linux-firmware-other
+  - fastflowlm
