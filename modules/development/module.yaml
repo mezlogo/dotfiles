@@ -3,3 +3,5 @@ pacman:
   - openjdk25-src
   - maven
   - gradle
+  - go
+  - go-tools
