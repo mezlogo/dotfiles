@@ -4,7 +4,3 @@ pacman:
   - linux-headers
   - linux-firmware-other
   - fastflowlm
-  - lemonade-server
-  - lemonade-desktop
-systemd:
-  - lemond.service
