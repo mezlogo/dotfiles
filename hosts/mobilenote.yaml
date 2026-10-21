@@ -13,3 +13,4 @@ modules:
   - scripts
   - amd-xdna
   - development
+  - vpn
