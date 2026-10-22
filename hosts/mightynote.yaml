@@ -1,6 +1,7 @@
 modules:
   - base
   - base-laptop
+  - base-nvidia
   - base-gpu
   - base-ssh
   - audio
@@ -10,3 +11,5 @@ modules:
   - hyprland
   - network
   - scripts
+  - development
+  - vpn
