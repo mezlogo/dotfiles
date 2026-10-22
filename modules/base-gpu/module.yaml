@@ -1,5 +1,4 @@
 pacman:
-  - mesa-utils
   - vulkan-tools
   - glmark2
   - vkmark 
