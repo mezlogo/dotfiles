@@ -136,7 +136,8 @@ CONTEXT_SIZE=$(( CONTEXT_K * 1024 ))
 
 # ─── Assemble command ────────────────────────────────────────────────────────
 CMD=(
-  llama-server
+  llama
+  serve
   -m "$MODEL"
   -ngl "$NGL"
   -c "$CONTEXT_SIZE"
