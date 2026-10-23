@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+#
+# llmserve — convenience wrapper around llama-server
+#
+# Baked-in defaults (matching the reference launch):
+#   -ngl all  -fa on  -ctk q8_0  -ctv q4_0  --host 0.0.0.0
+#
+# Anything after `--` is passed through verbatim to llama-server.
+
+set -euo pipefail
+
+# ─── Defaults ────────────────────────────────────────────────────────────────
+MODEL="${LLMSERVE_MODEL:-}"          # override with -m or LLMSERVE_MODEL
+CONTEXT_K=64                         # context in K tokens (64 -> 65536)
+PORT=10080                           # HTTP / WebUI port
+HOST="0.0.0.0"                       # listen address
+NGL="all"                            # GPU layers to offload
+FLASH="on"                           # flash attention
+CACHE_K="q8_0"                       # K-cache quant
+CACHE_V="q4_0"                       # V-cache quant
+EXTRA_ARGS=()                        # pass-through after `--`
+DRY_RUN=0
+
+# ─── Help ────────────────────────────────────────────────────────────────────
+usage() {
+  cat <<'EOF'
+Usage: llmserve -m MODEL [options] [-- EXTRA llama-server args...]
+
+Required:
+  -m, --model PATH          Path to the .gguf model file
+                            (or set LLMSERVE_MODEL in the environment)
+
+Custom options:
+  -ck, --context-k N        Context size in K tokens. 64 -> 65536. (default: 64)
+  -p,  --port N             HTTP / WebUI port. (default: 10080)
+  -h,  --host ADDR          Bind address. (default: 0.0.0.0)
+  -ngl, --gpu-layers N      Layers to offload to GPU; accepts a number,
+                            'auto', or 'all'. (default: all)
+  -fa, --flash-attn MODE    'on', 'off', or 'auto'. (default: on)
+       --cache-k TYPE       KV cache type for K. (default: q8_0)
+       --cache-v TYPE       KV cache type for V. (default: q4_0)
+       --dry-run            Print the assembled command and exit.
+       --help               Show this help.
+
+Anything after `--` is appended unchanged to the llama-server command line,
+e.g.:
+
+  llmserve -m ./m.gguf -ck 32 -p 8080 -- --api-key secret --jinja
+
+Environment:
+  LLMSERVE_MODEL            Default model path if -m is not given.
+
+Examples:
+  llmserve -m ~/data/models/llamagguf/MiniCPM5-2B-F16.gguf
+  llmserve -m ~/m.gguf -ck 128 -p 9000
+  llmserve -m ~/m.gguf -- --api-key "s3cret" --metrics
+EOF
+}
+
+# ─── Arg parsing ─────────────────────────────────────────────────────────────
+need_value() {
+  [[ $# -ge 2 && -n "$2" ]] || { echo "error: $1 requires a value" >&2; exit 2; }
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -m|--model)
+      need_value "$@"; MODEL="$2"; shift 2 ;;
+    -ck|--context-k)
+      need_value "$@"
+      [[ "$2" =~ ^[0-9]+$ ]] || { echo "error: --context-k must be an integer" >&2; exit 2; }
+      CONTEXT_K="$2"; shift 2 ;;
+    -p|--port)
+      need_value "$@"
+      [[ "$2" =~ ^[0-9]+$ ]] || { echo "error: --port must be an integer" >&2; exit 2; }
+      PORT="$2"; shift 2 ;;
+    -h|--host)
+      need_value "$@"; HOST="$2"; shift 2 ;;
+    -ngl|--gpu-layers)
+      need_value "$@"; NGL="$2"; shift 2 ;;
+    -fa|--flash-attn)
+      need_value "$@"; FLASH="$2"; shift 2 ;;
+    --cache-k)
+      need_value "$@"; CACHE_K="$2"; shift 2 ;;
+    --cache-v)
+      need_value "$@"; CACHE_V="$2"; shift 2 ;;
+    --dry-run)
+      DRY_RUN=1; shift ;;
+    --help)
+      usage; exit 0 ;;
+    --)
+      shift; EXTRA_ARGS=("$@"); break ;;
+    *)
+      echo "error: unknown option: $1" >&2
+      echo "       (use --help for usage, or -- to pass through to llama-server)" >&2
+      exit 2 ;;
+  esac
+done
+
+# ─── Validate ────────────────────────────────────────────────────────────────
+if [[ -z "$MODEL" ]]; then
+  echo "error: no model given. Use -m PATH or set LLMSERVE_MODEL." >&2
+  exit 2
+fi
+if [[ ! -f "$MODEL" ]]; then
+  echo "error: model file not found: $MODEL" >&2
+  exit 2
+fi
+
+CONTEXT_SIZE=$(( CONTEXT_K * 1024 ))
+
+# ─── Assemble command ────────────────────────────────────────────────────────
+CMD=(
+  llama-server
+  -m "$MODEL"
+  -ngl "$NGL"
+  -c "$CONTEXT_SIZE"
+  -fa "$FLASH"
+  -ctk "$CACHE_K"
+  -ctv "$CACHE_V"
+  --host "$HOST"
+  --port "$PORT"
+  "${EXTRA_ARGS[@]}"
+)
+
+if (( DRY_RUN )); then
+  printf 'would run:\n  '
+  printf '%q ' "${CMD[@]}"
+  printf '\n'
+  exit 0
+fi
+
+echo ">> ${CMD[*]}"
+exec "${CMD[@]}"
