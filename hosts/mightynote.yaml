@@ -1,5 +1,6 @@
 modules:
   - base
+  - base-build
   - base-laptop
   - base-nvidia
   - base-gpu
