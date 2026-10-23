@@ -3,3 +3,5 @@ pacman:
   - ccache
   - ninja
   - boost
+  - rust
+  - cargo
