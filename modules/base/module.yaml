@@ -1,4 +1,5 @@
 pacman:
+  - wireless-regdb
   - amd-ucode
   - base
   - base-devel

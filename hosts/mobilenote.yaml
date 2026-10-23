@@ -1,6 +1,7 @@
 modules:
   - base
   - base-build
+  - base-rocm
   - base-laptop
   - base-amdgpu
   - base-gpu

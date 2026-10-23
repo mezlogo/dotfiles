@@ -6,6 +6,9 @@ pacman:
   - wireplumber
   - pavucontrol
   - alsa-utils
+  - rtkit
+systemd:
+  - rtkit-daemon.service
 usersystemd:
   - wireplumber.service
   - pipewire.socket

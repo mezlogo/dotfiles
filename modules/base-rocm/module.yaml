@@ -1,0 +1,7 @@
+pacman:
+  - rocm-smi-lib
+  - hsa-rocr
+  - rocm-hip-sdk
+  - rocm-opencl-sdk
+  - rocblas
+  - hipblas
