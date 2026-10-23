@@ -1,7 +1,8 @@
 modules:
   - base
+  - base-build
   - base-laptop
-  - base-amd
+  - base-amdgpu
   - base-gpu
   - base-ssh
   - audio

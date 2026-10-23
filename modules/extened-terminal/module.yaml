@@ -28,6 +28,7 @@ pacman:
   - gping
   - git-delta
   - tree
+  - yazi
 
 aur:
   - leaf-markdown-viewer-bin
