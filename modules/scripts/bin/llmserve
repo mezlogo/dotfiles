@@ -4,6 +4,7 @@
 #
 # Baked-in defaults (matching the reference launch):
 #   -ngl all  -fa on  -ctk q8_0  -ctv q4_0  --host 0.0.0.0
+#   --no-reasoning-preserve  --reasoning-budget 2028
 #
 # Anything after `--` is passed through verbatim to llama-server.
 
@@ -18,6 +19,8 @@ NGL="all"                            # GPU layers to offload
 FLASH="on"                           # flash attention
 CACHE_K="q8_0"                       # K-cache quant
 CACHE_V="q4_0"                       # V-cache quant
+REASONING_PRESERVE=0                 # 0 = --no-reasoning-preserve, 1 = --reasoning-preserve
+REASONING_BUDGET=2028                # thinking token budget: -1 unlimited, 0 = no thinking, N > 0 cap
 EXTRA_ARGS=()                        # pass-through after `--`
 DRY_RUN=0
 
@@ -39,6 +42,15 @@ Custom options:
   -fa, --flash-attn MODE    'on', 'off', or 'auto'. (default: on)
        --cache-k TYPE       KV cache type for K. (default: q8_0)
        --cache-v TYPE       KV cache type for V. (default: q4_0)
+       --reasoning-preserve           Preserve full reasoning history across turns.
+                                      (default: OFF -- use --no-reasoning-preserve)
+       --no-reasoning-preserve        Do not preserve reasoning history.
+                                      (this is the default)
+       --reasoning-budget N  Thinking token budget:
+                                -1  unlimited
+                                 0  immediate end (no thinking)
+                                 N  cap at N tokens
+                              (default: 2028)
        --dry-run            Print the assembled command and exit.
        --help               Show this help.
 
@@ -47,12 +59,17 @@ e.g.:
 
   llmserve -m ./m.gguf -ck 32 -p 8080 -- --api-key secret --jinja
 
+Note: if you pass --reasoning-preserve / --reasoning-budget after `--`,
+they are appended *after* the wrapper's own values, and llama-server
+uses the last occurrence -- so the pass-through wins.
+
 Environment:
   LLMSERVE_MODEL            Default model path if -m is not given.
 
 Examples:
   llmserve -m ~/data/models/llamagguf/MiniCPM5-2B-F16.gguf
   llmserve -m ~/m.gguf -ck 128 -p 9000
+  llmserve -m ~/m.gguf --reasoning-preserve --reasoning-budget -1
   llmserve -m ~/m.gguf -- --api-key "s3cret" --metrics
 EOF
 }
@@ -84,6 +101,14 @@ while [[ $# -gt 0 ]]; do
       need_value "$@"; CACHE_K="$2"; shift 2 ;;
     --cache-v)
       need_value "$@"; CACHE_V="$2"; shift 2 ;;
+    --reasoning-preserve)
+      REASONING_PRESERVE=1; shift ;;
+    --no-reasoning-preserve)
+      REASONING_PRESERVE=0; shift ;;
+    --reasoning-budget)
+      need_value "$@"
+      [[ "$2" =~ ^-?[0-9]+$ ]] || { echo "error: --reasoning-budget must be an integer" >&2; exit 2; }
+      REASONING_BUDGET="$2"; shift 2 ;;
     --dry-run)
       DRY_RUN=1; shift ;;
     --help)
@@ -120,8 +145,16 @@ CMD=(
   -ctv "$CACHE_V"
   --host "$HOST"
   --port "$PORT"
-  "${EXTRA_ARGS[@]}"
+  --reasoning-budget "$REASONING_BUDGET"
 )
+
+if (( REASONING_PRESERVE )); then
+  CMD+=( --reasoning-preserve )
+else
+  CMD+=( --no-reasoning-preserve )
+fi
+
+CMD+=( "${EXTRA_ARGS[@]}" )
 
 if (( DRY_RUN )); then
   printf 'would run:\n  '
