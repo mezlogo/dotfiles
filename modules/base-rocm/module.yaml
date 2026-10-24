@@ -1,5 +1,6 @@
 pacman:
   - rocm-smi-lib
+  - amdgpu_top
   - hsa-rocr
   - rocm-hip-sdk
   - rocm-opencl-sdk
