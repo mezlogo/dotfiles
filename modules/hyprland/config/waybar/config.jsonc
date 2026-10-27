@@ -22,7 +22,8 @@
         "format": "{}",
         "min-length": 3,
         "format-ru": "RU",
-        "format-en": "EN"
+        "format-en": "EN",
+	"keyboard-name": "keyd-virtual-keyboard"
     },
     "tray": {
         "icon-size": 16,

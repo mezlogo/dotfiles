@@ -105,17 +105,17 @@ hl.config({
 
 hl.config({
         input = {
-        kb_layout = "us,ru",
-        kb_options = "grp:win_space_toggle",
-        follow_mouse = 0,
-        sensitivity = 0,
-        mouse_refocus = false,
+		kb_layout = "us,ru",
+		kb_options = "grp:win_space_toggle",
+		follow_mouse = 0,
+		sensitivity = 0,
+		mouse_refocus = false,
 
-        touchpad = {
-        natural_scroll = true,
+		touchpad = {
+			natural_scroll = true,
+		},
         },
-        },
-        })
+})
 
 ---------------------
 ---- KEYBINDINGS ----
