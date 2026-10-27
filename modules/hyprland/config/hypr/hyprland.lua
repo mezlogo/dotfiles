@@ -194,10 +194,8 @@ hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = tru
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
 
 -- Push-to-talk / release
-hl.bind(mainMod .. " + grave", hl.dsp.exec_cmd("$HOME/repos/mezlogo/forme/projects/asr_nemotron_wtype/push_to_talk_unix_client.sh"))
-hl.bind(mainMod .. " + grave", hl.dsp.exec_cmd("$HOME/repos/mezlogo/forme/projects/asr_nemotron_wtype/release.sh"), { release = true })
-
-    
+hl.bind(mainMod .. " + grave", hl.dsp.exec_cmd("$HOME/repos/mezlogo/forme/projects/asr_local/push_to_talk_unix_client.sh"))
+hl.bind(mainMod .. " + grave", hl.dsp.exec_cmd("$HOME/repos/mezlogo/forme/projects/asr_local/release.sh"), { release = true })
 
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----
