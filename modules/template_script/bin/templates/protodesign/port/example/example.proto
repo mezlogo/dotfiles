@@ -1,0 +1,24 @@
+
+syntax = "proto3";
+
+package port.example;
+
+import "protobuf_extensions/codegen_componenent_options.proto";
+    
+
+message ExampleCommand {
+    string message = 1;
+}
+
+message ExampleResult {
+    string message = 1;
+}
+
+service ExamplePort {
+    rpc Example(ExampleCommand) returns (ExampleResult) {
+        option (codegen.options.flat_arguments) = true;
+        option (codegen.options.flat_response) = true;
+    }
+}
+
+    

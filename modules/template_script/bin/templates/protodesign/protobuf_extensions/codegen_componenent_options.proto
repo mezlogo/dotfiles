@@ -1,0 +1,38 @@
+
+
+syntax = "proto3";
+
+package codegen.options;
+
+import "google/protobuf/descriptor.proto";
+
+/*
+ * Protobuf language doesn't support multiple arguments list in rpc declaration.
+ * Use those options for method level to flat arguments in target language.
+ * Example:
+ ```proto
+message Command {
+  string name = 1;
+  bool official = 2;
+}
+
+service GreetService {
+  rpc Greet(Command) returns (string) {
+    option (codegen.options.flat_arguments) = true;
+  }
+}
+```
+Becomes:
+```go
+type GreetService interface {
+  Greet(name string, official bool) string
+}
+```
+ */
+extend google.protobuf.MethodOptions {
+    bool flat_arguments = 50001;
+    bool flat_response = 50002;
+}
+
+
+    
