@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+SOURCE=${BASH_SOURCE[0]}
+while [ -h "$SOURCE" ]; do # check if $SOURCE is a symlink
+  DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
+  SOURCE=$(readlink "$SOURCE")
+  [[ $SOURCE != /* ]] && SOURCE=$DIR/$SOURCE # if $SOURCE was a relative symlink, resolve it relative to the path where the symlink file was located
+done
+SCRIPT_DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
+
+usage() {
+  echo "Usage: $(basename "$0") <template_name> [target_location]"
+  echo "Copies the contents of $SCRIPT_DIR/templates/<template_name> to target_location (default: current directory)."
+}
+
+if [ "$#" -eq 0 ]; then
+  usage >&2
+  exit 1
+fi
+
+case "$1" in
+  -h|--help)
+    usage
+    exit 0
+    ;;
+esac
+
+template_name=$1
+target_location=${2:-$PWD}
+template_source="$SCRIPT_DIR/templates/$template_name"
+
+if [ ! -e "$template_source" ]; then
+  echo "Template not found: $template_name" >&2
+  exit 1
+fi
+
+mkdir -p "$target_location"
+
+if [ -d "$template_source" ]; then
+  cp -R "$template_source"/. "$target_location"/
+else
+  cp "$template_source" "$target_location"/
+fi
+  
