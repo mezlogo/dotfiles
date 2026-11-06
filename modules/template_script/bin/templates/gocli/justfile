@@ -1,0 +1,16 @@
+all: clean format build
+
+clean:
+	rm -rf bin/
+
+test:
+	go test ./...
+
+format:
+	goimports -w .
+
+build:
+	go build -o bin/ ./...
+
+release:
+	go build -ldflags="-s -w" -trimpath -o bin/ ./...
