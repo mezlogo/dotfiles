@@ -1,7 +1,7 @@
 package greetservice
 
 import (
-	greetusecase "gocli/usecase/greetusecase"
+	greetusecase "gocli/usecase/greet_usecase"
 )
 
 type GreetService interface {
